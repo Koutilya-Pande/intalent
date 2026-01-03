@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+build/
+dist/
+pip-wheel-metadata/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Editors/IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env/config
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Testing/analysis
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Project outputs
+output/
+
+# Streamlit
+.streamlit/
+
+# Cursor/IDE state
+.cursor/
+.cursordb
+
+# Notebooks
+.ipynb_checkpoints/
+
+
