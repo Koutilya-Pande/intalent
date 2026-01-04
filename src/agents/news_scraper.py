@@ -2,10 +2,14 @@
 
 from pydantic import BaseModel
 from pydantic_ai import Agent
+import logging
 
 from src.config.settings import Settings
 from src.models.news import NewsArticle, NewsCollection
 from src.services.news_service import NewsService
+
+
+logger = logging.getLogger(__name__)
 
 
 class FilterNewsRequest(BaseModel):
@@ -51,10 +55,13 @@ class NewsScraperAgent:
         days: int | None = None,
     ) -> NewsCollection:
         """Fetch top 10 news articles and filter to target count."""
+        logger.info("Filtering flow started | target=%s, days=%s", target_count, days)
         # Fetch top 10 articles
         all_articles = await self.news_service.fetch_news(max_results=10, days=days)
+        logger.info("Fetched %s candidate articles from sources", len(all_articles))
 
         if not all_articles:
+            logger.warning("No candidate articles available after fetch. Returning empty collection.")
             return NewsCollection(
                 articles=[],
                 total_count=0,
@@ -63,8 +70,10 @@ class NewsScraperAgent:
 
         # Use AI agent to filter and rank articles
         if len(all_articles) <= target_count:
+            logger.info("Candidate count <= target (%s). Skipping AI filtering.", target_count)
             filtered_articles = all_articles
         else:
+            logger.info("Running AI filter on %s candidates → top %s", len(all_articles), target_count)
             # Prepare article summaries for the agent
             article_summaries = [
                 {
@@ -95,6 +104,11 @@ class NewsScraperAgent:
             article.relevance_score = 1.0 - (i * 0.1)
 
         filtered_articles = filtered_articles[:target_count]
+        logger.info(
+            "Filtering completed | total=%s, selected=%s",
+            len(all_articles),
+            len(filtered_articles),
+        )
         return NewsCollection(
             articles=filtered_articles,
             total_count=len(all_articles),

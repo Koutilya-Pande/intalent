@@ -68,7 +68,7 @@ with tab1:
             help="Limit news to the past N days",
         )
     with col3:
-        collect_button = st.button("🔍 Collect News", type="primary", width='stretch')
+        collect_button = st.button("🔍 Collect News", type="primary")
     
     if collect_button:
         with st.spinner("Collecting news articles..."):
@@ -127,7 +127,7 @@ with tab2:
             help="Save generated posts and images to output/ directory",
         )
     with col3:
-        generate_button = st.button("✨ Generate", type="primary", width='stretch')
+        generate_button = st.button("✨ Generate", type="primary")
 
     st.markdown("### Select URLs to include (optional)")
     selected_urls = st.text_area(
@@ -197,12 +197,12 @@ with tab2:
                         if image_path:
                             try:
                                 img = Image.open(image_path)
-                                st.image(img, width='stretch')
+                                st.image(img)
                             except Exception:
                                 if image_url:
-                                    st.image(image_url, width='stretch')
+                                    st.image(image_url)
                         elif image_url:
-                            st.image(image_url, width='stretch')
+                            st.image(image_url)
                         else:
                             st.warning("No image available")
                         
@@ -264,12 +264,12 @@ with tab2:
                             if image_path:
                                 try:
                                     img = Image.open(image_path)
-                                    st.image(img, width='stretch')
+                                    st.image(img)
                                 except Exception:
                                     if image_url:
-                                        st.image(image_url, width='stretch')
+                                        st.image(image_url)
                             elif image_url:
-                                st.image(image_url, width='stretch')
+                                st.image(image_url)
                             else:
                                 st.warning("No image available yet")
                     if status["completed"] >= status["total_expected"]:

@@ -1,0 +1,112 @@
+•	Avoid obvious performance pitfalls (e.g., unnecessary loops, repeated DB calls)
+	•	Use caching where logically required
+	•	Avoid unnecessary re-renders or recomputations
+
+AI MUST NOT:
+	•	Prematurely optimize
+	•	Over-engineer for hypothetical scale
+
+⸻
+
+10. Testability Is Required
+
+AI-generated code MUST be test-friendly:
+	•	Prefer pure functions
+	•	Minimize side effects
+	•	Use dependency injection when applicable
+	•	Avoid tight coupling to globals or frameworks
+
+If code cannot be tested, it is considered flawed.
+
+⸻
+
+11. Comments Must Explain Why, Not What
+
+Comments MUST:
+	•	Explain intent
+	•	Clarify trade-offs
+	•	Document assumptions
+
+Comments MUST NOT:
+	•	Explain obvious syntax
+	•	Restate code behavior
+
+⸻
+
+12. Explicit Assumptions & Constraints
+
+AI MUST clearly state:
+	•	Assumptions about inputs
+	•	Known limitations
+	•	Intentional edge cases ignored
+	•	Environment expectations
+
+Unstated assumptions are unacceptable.
+
+⸻
+
+13. Match the Tech Stack Philosophy
+
+AI MUST adapt to the stack being used.
+
+Examples:
+	•	React → declarative & component-driven
+	•	Next.js → clear server/client separation
+	•	Backend → stateless & idempotent
+	•	Functional patterns → immutability
+	•	OOP patterns → encapsulation & cohesion
+
+Do not force paradigms.
+
+⸻
+
+14. No Over-Engineering
+
+AI MUST:
+	•	Solve the current problem cleanly
+	•	Keep abstractions minimal
+	•	Leave room for extension without speculative complexity
+
+Avoid building for imaginary future requirements.
+
+⸻
+
+15. Mandatory Pre-Output Sanity Check
+
+Before finalizing output, AI MUST internally verify:
+	•	Code compiles
+	•	Imports are correct
+	•	No unused variables
+	•	Edge cases are handled
+	•	Style is consistent with the codebase
+
+Failure to self-check is unacceptable.
+
+⸻
+
+16. AI as a Team Member
+
+AI SHOULD:
+	•	Explain decisions briefly when helpful
+	•	Warn about trade-offs
+	•	Suggest improvements only when relevant
+	•	Respect developer intent
+
+AI is expected to behave like a senior teammate, not an autonomous system.
+
+⸻
+
+17. Enforcement Clause
+
+If a request conflicts with this document:
+	•	The AI MUST prioritize this document
+	•	The AI SHOULD warn the user
+	•	The AI SHOULD propose a compliant alternative
+
+⸻
+
+✅ Final Rule
+
+If the code is not boring, readable, safe, typed, testable, and maintainable,
+it does not meet the standards of this project.
+AI MUST follow these rules without exception.

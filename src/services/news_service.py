@@ -4,9 +4,13 @@ from typing import Optional
 
 import httpx
 from bs4 import BeautifulSoup
+import logging
 
 from src.config.settings import Settings
 from src.models.news import NewsArticle, NewsCategory
+
+
+logger = logging.getLogger(__name__)
 
 
 class NewsService:
@@ -64,7 +68,7 @@ class NewsService:
 
                 return articles
         except Exception as e:
-            print(f"Warning: NewsAPI failed for query '{query}': {str(e)}")
+            logger.warning("NewsAPI failed for query '%s': %s", query, str(e))
             return []
 
     async def fetch_from_serpapi(
@@ -119,7 +123,7 @@ class NewsService:
 
                 return articles
         except Exception as e:
-            print(f"Warning: SerpAPI failed for query '{query}': {str(e)}")
+            logger.warning("SerpAPI failed for query '%s': %s", query, str(e))
             return []
 
     async def fetch_from_web_search(
@@ -178,7 +182,7 @@ class NewsService:
 
                 return articles
         except Exception as e:
-            print(f"Warning: Web search failed for query '{query}': {str(e)}")
+            logger.warning("Web search failed for query '%s': %s", query, str(e))
             return []
 
     async def fetch_news(
@@ -195,36 +199,54 @@ class NewsService:
 
         all_articles = []
 
+        logger.info(
+            "News fetch started | max_results=%s, days=%s | sources=%s",
+            max_results,
+            days,
+            ", ".join(
+                s for s, enabled in [
+                    ("NewsAPI", bool(self.newsapi_key)),
+                    ("SerpAPI", bool(self.serpapi_key)),
+                    ("WebSearch", True),
+                ] if enabled
+            ),
+        )
+
         # Try NewsAPI first
         if self.newsapi_key:
-            print("   Using NewsAPI...")
+            source_total = 0
             for query in queries:
                 articles = await self.fetch_from_newsapi(query, max_results=5, days=days)
                 all_articles.extend(articles)
-                if articles:
-                    print(f"   Found {len(articles)} articles for: {query}")
+                source_total += len(articles)
+            if source_total:
+                logger.info("NewsAPI collected %s articles across %s queries", source_total, len(queries))
 
         # Try SerpAPI if NewsAPI didn't work
         if not all_articles and self.serpapi_key:
-            print("   NewsAPI not available or returned no results. Trying SerpAPI...")
+            logger.info("NewsAPI returned 0 articles. Trying SerpAPI...")
+            source_total = 0
             for query in queries:
                 articles = await self.fetch_from_serpapi(query, max_results=5, days=days)
                 all_articles.extend(articles)
-                if articles:
-                    print(f"   Found {len(articles)} articles for: {query}")
+                source_total += len(articles)
+            if source_total:
+                logger.info("SerpAPI collected %s articles across %s queries", source_total, len(queries))
 
         # Fallback to web search if APIs didn't work
         if not all_articles:
-            print("   APIs not available or returned no results. Trying web search...")
+            logger.info("APIs returned 0 articles. Trying web search fallback...")
+            source_total = 0
             for query in queries:
                 articles = await self.fetch_from_web_search(query, max_results=5, days=days)
                 all_articles.extend(articles)
-                if articles:
-                    print(f"   Found {len(articles)} articles for: {query}")
+                source_total += len(articles)
+            if source_total:
+                logger.info("Web search collected %s articles across %s queries", source_total, len(queries))
 
         # If still no articles, provide some mock data for testing
         if not all_articles:
-            print("   Warning: No articles found from any source. Using mock data for testing...")
+            logger.warning("No articles found from any source. Using mock data for testing...")
             all_articles = self._get_mock_articles()
 
         # Remove duplicates based on URL
@@ -236,6 +258,7 @@ class NewsService:
                 seen_urls.add(url_str)
                 unique_articles.append(article)
 
+        logger.info("Deduplicated %s -> %s unique articles. Returning %s.", len(all_articles), len(unique_articles), min(max_results, len(unique_articles)))
         return unique_articles[:max_results]
 
     def _get_mock_articles(self) -> list[NewsArticle]:

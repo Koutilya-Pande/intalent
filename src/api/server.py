@@ -28,7 +28,10 @@ import asyncio
 import uuid
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+)
 logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
@@ -114,7 +117,11 @@ async def collect_news(
                 detail="No news articles found. Check API keys or try again later.",
             )
         
-        logger.info(f"✅ Collected {len(news_collection.articles)} articles")
+        logger.info(
+            "News collection completed | total=%s, filtered=%s",
+            news_collection.total_count,
+            news_collection.filtered_count,
+        )
         return news_collection
     except HTTPException:
         raise
